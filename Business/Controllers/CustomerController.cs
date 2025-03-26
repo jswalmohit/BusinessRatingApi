@@ -48,7 +48,8 @@ namespace Business.Controllers
                     Cus_Location = customerDto.Cus_Location,
                     Longitude = customerDto.Longitude,
                     Latitude = customerDto.Latitude,
-                    RoleID = 4
+                    RoleID = 4,
+                    PinCode = customerDto.pinCode
                 };
                 _context.Customers.Add(customerObj);
                 await _context.SaveChangesAsync();
@@ -65,6 +66,45 @@ namespace Business.Controllers
         {
             var customerData = await _context.Customers.Where(u => u.Cus_Id == cusId).ToListAsync();
             return Ok(customerData);
+        }
+
+        [HttpPut("updatecustomerdetails")]
+        public async Task<ActionResult<bool>> UpdateCustomer([FromForm] CustomerDto customerDto)
+        {
+            if (customerDto == null || string.IsNullOrEmpty(customerDto.Cus_EmailId))
+            {
+                return BadRequest(new { message = "Invalid data. Please check the input." }); // HTTP 400 Bad Request
+            }
+
+            try
+            {
+                var existingCustomer = await _context.Customers.FindAsync(customerDto.Cus_Id);
+                if (existingCustomer == null)
+                {
+                    return NotFound(new { message = "Customer not found." }); // HTTP 404 Not Found
+                }
+
+                // Update customer details
+                existingCustomer.Cus_EmailId = customerDto.Cus_EmailId;
+                existingCustomer.Cus_Location = customerDto.Cus_Location;
+                existingCustomer.Longitude = customerDto.Longitude;
+                existingCustomer.Latitude = customerDto.Latitude;
+
+                // Update password only if provided
+                if (!string.IsNullOrEmpty(customerDto.Cus_Password))
+                {
+                    existingCustomer.Cus_Password = BCrypt.Net.BCrypt.HashPassword(customerDto.Cus_Password);
+                }
+
+                _context.Customers.Update(existingCustomer);
+                await _context.SaveChangesAsync();
+
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         [HttpGet("check-email")]
