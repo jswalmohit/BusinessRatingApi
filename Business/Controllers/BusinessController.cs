@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Net.Http;
 using Business.Service;
+using Business.Repositories.Interface;
 
 namespace Business.Controllers
 {
@@ -23,14 +24,16 @@ namespace Business.Controllers
         private readonly IConfiguration _configuration;
         private readonly string _apiKey;
         private IWebHostEnvironment _env;
-
+        private readonly IBusinessRepository _businessRepo;
         private readonly string _uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-        public BusinessController(ILogger<BusinessController> logger, BusinessContext context, HttpClient httpClient, IConfiguration configuration,IWebHostEnvironment env)
+        public BusinessController(ILogger<BusinessController> logger, BusinessContext context, HttpClient httpClient,
+                                  IConfiguration configuration, IBusinessRepository businessRepo, IWebHostEnvironment env)
         {
             _context = context;
             _logger = logger;
             _apiKey = configuration["GoogleMaps:ApiKey"]; // API key stored in configuration
             _env=env;
+            _businessRepo = businessRepo;
         }        
 
         [HttpGet("{imageName}")]
@@ -49,58 +52,67 @@ namespace Business.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> RegisterBusiness([FromForm] BusinesDto businesDto)
         {
-            try
+            var response =await _businessRepo.RegisterBusiness(businesDto);
+            if(response)
             {
-                string? filePath = null;
-
-                if (businesDto.VisitingCard != null)
-                {
-                    // Ensure the uploads folder exists
-                    var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    // Generate a unique file name to prevent conflicts
-                    string uniqueFileName = $"{Guid.NewGuid()}_{businesDto.VisitingCard.FileName}";
-                    filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    // Save the file
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await businesDto.VisitingCard.CopyToAsync(stream);
-                    }
-
-                    // Convert to a relative path (for storing in the database)
-                    filePath = Path.Combine("uploads", uniqueFileName);
-                }               
-
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(businesDto.Password);
-
-                var business = new Busines
-                {
-                    Name = businesDto.Name,
-                    EmailId = businesDto.EmailId,
-                    Password = hashedPassword,
-                    Description = businesDto.Description,
-                    Location = businesDto.Location,
-                    Latitude = businesDto.Latitude,
-                    Longitude = businesDto.Longitude,
-                    VisitingCard = filePath,
-                    CategoryID = businesDto.CategoryID,
-                    SubCategoryID = businesDto.SubCategoryID,
-                    RoleID = 3 // Business role
-                };
-                _context.Businesses.Add(business);
-                int regStatus = await _context.SaveChangesAsync();
                 return Ok(true);
-               
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }            
+                return StatusCode(HttpResponseCustom.StatusCode,HttpResponseCustom.Message);
+            }
+            //try
+            //{
+            //    string? filePath = null;
+
+            //    if (businesDto.VisitingCard != null)
+            //    {
+            //        // Ensure the uploads folder exists
+            //        var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+            //        if (!Directory.Exists(uploadsFolder))
+            //        {
+            //            Directory.CreateDirectory(uploadsFolder);
+            //        }
+
+            //        // Generate a unique file name to prevent conflicts
+            //        string uniqueFileName = $"{Guid.NewGuid()}_{businesDto.VisitingCard.FileName}";
+            //        filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            //        // Save the file
+            //        using (var stream = new FileStream(filePath, FileMode.Create))
+            //        {
+            //            await businesDto.VisitingCard.CopyToAsync(stream);
+            //        }
+
+            //        // Convert to a relative path (for storing in the database)
+            //        filePath = Path.Combine("uploads", uniqueFileName);
+            //    }               
+
+            //    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(businesDto.Password);
+
+            //    var business = new Busines
+            //    {
+            //        Name = businesDto.Name,
+            //        EmailId = businesDto.EmailId,
+            //        Password = hashedPassword,
+            //        Description = businesDto.Description,
+            //        Location = businesDto.Location,
+            //        Latitude = businesDto.Latitude,
+            //        Longitude = businesDto.Longitude,
+            //        VisitingCard = filePath,
+            //        CategoryID = businesDto.CategoryID,
+            //        SubCategoryID = businesDto.SubCategoryID,
+            //        RoleID = 3 // Business role
+            //    };
+            //    _context.Businesses.Add(business);
+            //    int regStatus = await _context.SaveChangesAsync();
+            //    return Ok(true);
+               
+            //}
+            //catch (Exception ex)
+            //{
+            //    return StatusCode(500, $"Internal server error: {ex.Message}");
+            //}            
         }
 
         [HttpPut]
@@ -334,29 +346,14 @@ namespace Business.Controllers
         [HttpGet("getbusinessdetailbyid/{id}")]
         public async Task<IActionResult> GetBusineesDetailById(int id)
         {
-            try
+            var response =  await _businessRepo.SearchBusinessById(id);
+            if(response != null)
             {
-                var businesses = await _context.Businesses.Where(b => b.BusinessID == id).Select(b => new Busines
-                {
-                    BusinessID = b.BusinessID,
-                    Name = b.Name,
-                    EmailId = b.EmailId,
-                    Password = b.Password,
-                    Description = b.Description,
-                    Location = b.Location,
-                    VisitingCard = b.VisitingCard,
-                    Latitude = b.Latitude,
-                    Longitude = b.Longitude,
-                    CategoryID = b.CategoryID,
-                    SubCategoryID = b.SubCategoryID,
-                    RoleID = b.RoleID
-                }).ToListAsync();
-
-                return Ok(businesses);
+                return Ok(response);
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(HttpResponseCustom.StatusCode, HttpResponseCustom.Message);
             }
         }
     }    

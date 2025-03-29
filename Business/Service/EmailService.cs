@@ -16,8 +16,8 @@ namespace Business.Service
         {
             var smtpServer = _configuration["EmailSettings:SmtpServer"];
             var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
-            var smtpUsername = "sasmitasahu1126@gmail.com"; //_configuration["EmailSettings:SmtpUsername"];
-            var smtpPassword = "coqs zcyb wxyt lszg";//_configuration["EmailSettings:SmtpPassword"];
+            var smtpUsername = "businessrating001@gmail.com"; //_configuration["EmailSettings:SmtpUsername"];
+            var smtpPassword = "zxciopzxc";//_configuration["EmailSettings:SmtpPassword"];
             var fromEmail = _configuration["EmailSettings:FromEmail"];
 
             using (var client = new SmtpClient(smtpServer, smtpPort))

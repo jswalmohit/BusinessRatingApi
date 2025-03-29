@@ -17,8 +17,9 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddTransient<EmailService>();
-builder.Services.AddTransient<SubAdminServices>();
+
+builder.Services.AddCustomServices();
+
 builder.Services.AddDbContext<BusinessContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 //builder.Services.AddDbContext<BusinessContext>(options =>
