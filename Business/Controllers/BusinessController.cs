@@ -12,11 +12,13 @@ using System.Text;
 using System.Net.Http;
 using Business.Service;
 using Business.Repositories.Interface;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Business.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AllowAdminAccessOnly")]
     public class BusinessController : ControllerBase
     {
         private readonly BusinessContext _context;
@@ -61,58 +63,7 @@ namespace Business.Controllers
             {
                 return StatusCode(HttpResponseCustom.StatusCode,HttpResponseCustom.Message);
             }
-            //try
-            //{
-            //    string? filePath = null;
-
-            //    if (businesDto.VisitingCard != null)
-            //    {
-            //        // Ensure the uploads folder exists
-            //        var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-            //        if (!Directory.Exists(uploadsFolder))
-            //        {
-            //            Directory.CreateDirectory(uploadsFolder);
-            //        }
-
-            //        // Generate a unique file name to prevent conflicts
-            //        string uniqueFileName = $"{Guid.NewGuid()}_{businesDto.VisitingCard.FileName}";
-            //        filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            //        // Save the file
-            //        using (var stream = new FileStream(filePath, FileMode.Create))
-            //        {
-            //            await businesDto.VisitingCard.CopyToAsync(stream);
-            //        }
-
-            //        // Convert to a relative path (for storing in the database)
-            //        filePath = Path.Combine("uploads", uniqueFileName);
-            //    }               
-
-            //    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(businesDto.Password);
-
-            //    var business = new Busines
-            //    {
-            //        Name = businesDto.Name,
-            //        EmailId = businesDto.EmailId,
-            //        Password = hashedPassword,
-            //        Description = businesDto.Description,
-            //        Location = businesDto.Location,
-            //        Latitude = businesDto.Latitude,
-            //        Longitude = businesDto.Longitude,
-            //        VisitingCard = filePath,
-            //        CategoryID = businesDto.CategoryID,
-            //        SubCategoryID = businesDto.SubCategoryID,
-            //        RoleID = 3 // Business role
-            //    };
-            //    _context.Businesses.Add(business);
-            //    int regStatus = await _context.SaveChangesAsync();
-            //    return Ok(true);
-               
-            //}
-            //catch (Exception ex)
-            //{
-            //    return StatusCode(500, $"Internal server error: {ex.Message}");
-            //}            
+           
         }
 
         [HttpPut]
@@ -292,56 +243,6 @@ namespace Business.Controllers
             }
         }
         
-        //[HttpGet("search")]
-        //public async Task<IActionResult> SearchBusinesses(string category, string subcategory, int pageNumber = 1, int pageSize = 2)
-        //{
-        //    try
-        //    {
-        //        if (pageNumber < 1) pageNumber = 1;
-        //        if (pageSize < 1) pageSize = 10;
-
-        //        var query = _context.Businesses
-        //            .Include(b => b.SubCategory)
-        //            .ThenInclude(sc => sc.Category)
-        //            .Where(b => b.SubCategory.Category.CategoryName == category && b.SubCategory.SubCategoryName == subcategory);
-
-        //        // Get total records count
-        //        var totalRecords = await query.CountAsync();
-
-        //        // Apply pagination
-        //        var businesses = await query
-        //            .Skip((pageNumber - 1) * pageSize)
-        //            .Take(pageSize)
-        //            .Select(b => new BusinessDataShow
-        //            {
-        //                BusinessID = b.BusinessID,
-        //                Name = b.Name,
-        //                Description = b.Description,
-        //                Distancekm = b.Latitude + b.Longitude,
-        //                longitude = b.Longitude,
-        //                Latitude = b.Latitude,
-        //                VisitingCard = b.VisitingCard,
-        //                Location = b.Location
-        //            })
-        //            .ToListAsync();
-
-        //        // Pagination metadata
-        //        var pagination = new
-        //        {
-        //            TotalRecords = totalRecords,
-        //            PageNumber = pageNumber,
-        //            PageSize = pageSize,
-        //            TotalPages = (int)Math.Ceiling((double)totalRecords / pageSize), //
-        //            Data = businesses
-        //        };
-
-        //        return Ok(pagination);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        ///        return StatusCode(500, $"Internal server error: {ex.Message}");
-        //    }
-        //}
 
         [HttpGet("getbusinessdetailbyid/{id}")]
         public async Task<IActionResult> GetBusineesDetailById(int id)
