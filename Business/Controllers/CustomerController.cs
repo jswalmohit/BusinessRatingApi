@@ -25,6 +25,7 @@ namespace Business.Controllers
         {
             _context = context;
             _logger = logger;
+            _configuration  = configuration;
         }
 
         [HttpPost]
