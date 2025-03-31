@@ -107,8 +107,8 @@ namespace Business.Repositories
             catch (Exception ex)
             {
 
-                HttpResponseCustom.StatusCode = 404;
-                HttpResponseCustom.Message = "Business not found.";
+                HttpResponseCustom.StatusCode = 500;
+                HttpResponseCustom.Message = $"Internal server error: {ex.Message}";
                 return null;
             }
         }

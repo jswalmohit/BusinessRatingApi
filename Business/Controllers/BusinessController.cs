@@ -21,16 +21,12 @@ namespace Business.Controllers
     //[Authorize(Policy = "AllowUserAccessOnly")]
     public class BusinessController : ControllerBase
     {
-        private readonly BusinessContext _context;
-        public ILogger<BusinessController> _logger;
         private IWebHostEnvironment _env;
         private readonly IBusinessRepository _businessRepo;
         private readonly string _uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-        public BusinessController(ILogger<BusinessController> logger, BusinessContext context, HttpClient httpClient,
+        public BusinessController( HttpClient httpClient,
                                   IConfiguration configuration, IBusinessRepository businessRepo, IWebHostEnvironment env)
         {
-            _context = context;
-            _logger = logger;
             _env=env;
             _businessRepo = businessRepo;
         }        
