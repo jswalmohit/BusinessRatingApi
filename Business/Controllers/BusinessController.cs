@@ -21,40 +21,31 @@ namespace Business.Controllers
     //[Authorize(Policy = "AllowUserAccessOnly")]
     public class BusinessController : ControllerBase
     {
-        private IWebHostEnvironment _env;
         private readonly IBusinessRepository _businessRepo;
-        private readonly string _uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
-        public BusinessController( HttpClient httpClient,
-                                  IConfiguration configuration, IBusinessRepository businessRepo, IWebHostEnvironment env)
+        //private readonly string _uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+        public BusinessController (IBusinessRepository businessRepo)
         {
-            _env=env;
             _businessRepo = businessRepo;
         }        
-
-        [HttpGet("{imageName}")]
-        public IActionResult GetImage(string imageName)
-        {
-            var filePath = Path.Combine(_uploadsFolder, imageName);
-            if (!System.IO.File.Exists(filePath))
-            {
-                return NotFound();
-            }
-
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            return File(fileBytes, "image/jpeg"); // Adjust MIME type as needed
-        }
 
         [HttpPost]
         public async Task<ActionResult<bool>> RegisterBusiness([FromForm] BusinesDto businesDto)
         {
-            var response =await _businessRepo.RegisterBusiness(businesDto);
-            if(response)
+            try
             {
-                return Ok(true);
-            }
-            else
+                var response = await _businessRepo.RegisterBusiness(businesDto);
+                if (response)
+                {
+                    return Ok(true);
+                }
+                else
+                {
+                    return StatusCode(HttpResponseCustom.StatusCode, HttpResponseCustom.Message);
+                }
+            }catch (Exception ex)
             {
-                return StatusCode(HttpResponseCustom.StatusCode,HttpResponseCustom.Message);
+                HttpResponseCustom.StatusCode = 500;
+                return StatusCode(HttpResponseCustom.StatusCode, ex.Message);
             }
            
         }
@@ -157,5 +148,18 @@ namespace Business.Controllers
                 return StatusCode(HttpResponseCustom.StatusCode, HttpResponseCustom.Message);
             }
         }
-    }    
+
+        //[HttpGet("{imageName}")]
+        //public IActionResult GetImage(string imageName)
+        //{
+        //    var filePath = Path.Combine(_uploadsFolder, imageName);
+        //    if (!System.IO.File.Exists(filePath))
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var fileBytes = System.IO.File.ReadAllBytes(filePath);
+        //    return File(fileBytes, "image/jpeg"); // Adjust MIME type as needed
+        //}
+    }
 }

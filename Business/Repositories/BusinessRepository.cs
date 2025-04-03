@@ -67,7 +67,6 @@ namespace Business.Repositories
                 HttpResponseCustom.StatusCode = 200;
                 HttpResponseCustom.Message = "Registered business successfully!";
                 return true;
-
             }
             catch (Exception ex)
             {
