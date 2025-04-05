@@ -93,7 +93,8 @@ namespace Business.Tests.Controllers
             var actionResult = Assert.IsType<ActionResult<bool>>(result);
             var objectResult = Assert.IsType<ObjectResult>(actionResult.Result); // Expect ObjectResult for failure
             Assert.Equal(500, objectResult.StatusCode); // Expect 500 Internal Server Error for failure
-            Assert.False((bool)objectResult.Value); // Expect false value for failure            Assert.False((bool)objectResult.Value); // Expect false value for failure
+            Assert.False((bool)objectResult.Value); // Expect false value for failure
+           // Assert.False((bool)objectResult.Value); // Expect false value for failure
         }
 
     }
