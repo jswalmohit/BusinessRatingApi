@@ -18,5 +18,6 @@ namespace Business.Models
         [ForeignKey("RoleID")]
         public Role Role { get; set; } = null!;
         public int? PinCode { get; set; }
+
     }
 }

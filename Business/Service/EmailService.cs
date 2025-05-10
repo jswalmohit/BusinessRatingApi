@@ -16,33 +16,6 @@ namespace Business.Service
         {
             var smtpServer = _configuration["EmailSettings:SmtpServer"];
             var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
-            var smtpUsername = "businessrating001@gmail.com"; //_configuration["EmailSettings:SmtpUsername"];
-            var smtpPassword = "zxciopzxc";//_configuration["EmailSettings:SmtpPassword"];
-            var fromEmail = _configuration["EmailSettings:FromEmail"];
-
-            using (var client = new SmtpClient(smtpServer, smtpPort))
-            {
-                client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
-                client.EnableSsl = true;
-
-                var mailMessage = new MailMessage
-                {
-                    From = new MailAddress(fromEmail),
-                    Subject = subject,
-                    Body = body,
-                    IsBodyHtml = true
-                };
-
-                mailMessage.To.Add(toEmail);
-
-                await client.SendMailAsync(mailMessage);
-            }
-        }
-
-        public async Task SendEmailForForgotPasswordAsync(string toEmail, string subject, string body)
-        {
-            var smtpServer = _configuration["EmailSettings:SmtpServer"];
-            var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
             var smtpUsername = _configuration["EmailSettings:SmtpUsername"];
             var smtpPassword = _configuration["EmailSettings:SmtpPassword"];
             var fromEmail = _configuration["EmailSettings:FromEmail"];
@@ -65,5 +38,32 @@ namespace Business.Service
                 await client.SendMailAsync(mailMessage);
             }
         }
+
+        //public async Task SendEmailForForgotPasswordAsync(string toEmail, string subject, string body)
+        //{
+        //    var smtpServer = _configuration["EmailSettings:SmtpServer"];
+        //    var smtpPort = int.Parse(_configuration["EmailSettings:SmtpPort"]);
+        //    var smtpUsername = _configuration["EmailSettings:SmtpUsername"];
+        //    var smtpPassword = _configuration["EmailSettings:SmtpPassword"];
+        //    var fromEmail = _configuration["EmailSettings:FromEmail"];
+
+        //    using (var client = new SmtpClient(smtpServer, smtpPort))
+        //    {
+        //        client.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+        //        client.EnableSsl = true;
+
+        //        var mailMessage = new MailMessage
+        //        {
+        //            From = new MailAddress(fromEmail),
+        //            Subject = subject,
+        //            Body = body,
+        //            IsBodyHtml = true
+        //        };
+
+        //        mailMessage.To.Add(toEmail);
+
+        //        await client.SendMailAsync(mailMessage);
+        //    }
+        //}
     }
 }

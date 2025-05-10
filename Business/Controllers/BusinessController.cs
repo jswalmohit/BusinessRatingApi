@@ -18,7 +18,7 @@ namespace Business.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Policy = "AllowUserAccessOnly")]
+    [Authorize(Policy = "AllowUserAccessOnly")]
     public class BusinessController : ControllerBase
     {
         private readonly IBusinessRepository _businessRepo;

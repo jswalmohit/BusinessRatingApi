@@ -34,6 +34,7 @@ namespace Banking_Application.Controllers
         [HttpPost("login")]
         public IActionResult Login(Business.Models.LoginRequest request)
         {
+            //throw new NotImplementedException("not implemented");
             try
             {
                 if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
@@ -199,7 +200,7 @@ namespace Banking_Application.Controllers
             string body = $"Click the following link to reset your password: <a href='{resetLink}'>Reset Password</a>";
 
             // Implement your email sending logic here
-            await _emailService.SendEmailForForgotPasswordAsync(email, subject, body);
+            await _emailService.SendEmailAsync(email, subject, body);
         }
 
         [HttpPost("reset-password")]

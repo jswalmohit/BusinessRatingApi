@@ -1,6 +1,8 @@
 using Business.Data;
+using Business.Middlewares;
 using Business.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
@@ -103,6 +105,7 @@ app.UseStaticFiles(new StaticFileOptions
 //}
 
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors("AllowSpecificOrigin");
 app.UseStaticFiles();
 

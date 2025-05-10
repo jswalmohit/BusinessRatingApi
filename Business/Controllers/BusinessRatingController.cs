@@ -1,5 +1,6 @@
 ﻿using Business.Data;
 using Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace Business.Controllers
         }
 
         // POST: api/BusinessRatings/Add
+        [Authorize(Policy = "AllowAdminAccessOnly")]
         [HttpPost("Add")]
         public async Task<IActionResult> AddBusinessRating([FromBody] BusinessRatings rating)
         {
